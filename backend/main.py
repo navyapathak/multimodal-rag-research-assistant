@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 import fitz
 import os
+from chunker import split_text
 
 app = FastAPI()
 
@@ -28,7 +29,11 @@ async def upload_pdf(file: UploadFile = File(...)):
     for page in doc:
         text += page.get_text()
 
+    chunks = split_text(text)
+
     return {
         "filename": file.filename,
-        "characters_extracted": len(text)
+        "characters_extracted": len(text),
+        "total_chunks": len(chunks),
+        "first_chunk": chunks[0]
     }
