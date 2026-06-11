@@ -12,7 +12,8 @@ def search_rag(query, chunks, chunk_embeddings):
         query_embedding,
         chunk_embeddings
     )[0]
-
-    best_index = np.argmax(scores)
-
-    return chunks[best_index]
+    top_indices = np.argsort(scores)[-3:]
+    context = ""
+    for i in top_indices:
+          context += chunks[i] + "\n\n"
+          return context

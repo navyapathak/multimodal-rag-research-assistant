@@ -1,3 +1,4 @@
+from gemini_service import generate_answer
 from embeddings import create_embedding
 from rag_search import search_rag
 from gemini_service import generate_answer
@@ -65,20 +66,18 @@ async def upload_pdf(file: UploadFile = File(...)):
 def ask_question(query: str):
 
     if not stored_chunks:
-        return {
-            "error": "Upload PDF first"
-        }
+        return {"error": "Upload PDF first"}
 
     context = search_rag(
-    query,
-    stored_chunks,
-    stored_embeddings
-)
+        query,
+        stored_chunks,
+        stored_embeddings
+    )
 
-answer = generate_answer(
-    query,
-    context
-)
+    answer = generate_answer(
+        query,
+        context
+    )
 
     return {
         "question": query,
