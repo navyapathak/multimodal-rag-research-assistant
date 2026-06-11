@@ -7,12 +7,14 @@ from fastapi import FastAPI, UploadFile, File
 import fitz
 import os
 from chunker import split_text
+from faiss_store import create_faiss_index
 
 app = FastAPI()
 
 # Store PDF data in memory
 stored_chunks = []
 stored_embeddings = []
+faiss_index = None
 
 # Load embedding model once
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -50,9 +52,11 @@ async def upload_pdf(file: UploadFile = File(...)):
     # Save chunks and embeddings globally
     global stored_chunks
     global stored_embeddings
+    global faiss_index
 
     stored_chunks = chunks
     stored_embeddings = model.encode(chunks)
+    faiss_index = create_faiss_index(stored_embeddings)
 
     return {
         "filename": file.filename,
@@ -69,10 +73,10 @@ def ask_question(query: str):
         return {"error": "Upload PDF first"}
 
     context = search_rag(
-        query,
-        stored_chunks,
-        stored_embeddings
-    )
+    query,
+    stored_chunks,
+    faiss_index
+)
 
     answer = generate_answer(
         query,
