@@ -1,10 +1,11 @@
+from embeddings import create_embedding
+from rag_search import search_rag
+from gemini_service import generate_answer
+from sentence_transformers import SentenceTransformer
 from fastapi import FastAPI, UploadFile, File
 import fitz
 import os
-
 from chunker import split_text
-from rag_search import search_rag
-from sentence_transformers import SentenceTransformer
 
 app = FastAPI()
 
@@ -68,11 +69,16 @@ def ask_question(query: str):
             "error": "Upload PDF first"
         }
 
-    answer = search_rag(
-        query,
-        stored_chunks,
-        stored_embeddings
-    )
+    context = search_rag(
+    query,
+    stored_chunks,
+    stored_embeddings
+)
+
+answer = generate_answer(
+    query,
+    context
+)
 
     return {
         "question": query,
