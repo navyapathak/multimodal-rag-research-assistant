@@ -1,1 +1,1 @@
-# multimodal-rag-research-assistant
+# Multimodal-Rag-Research-Assistant
